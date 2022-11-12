@@ -3,7 +3,7 @@ import Form from "react-bootstrap/Form";
 import { Container, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./signup.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import botImg from "./../assets/images/bot.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,17 +15,19 @@ function Signup() {
   const [password, setPassword] = useState("");
 
   //Upload image
+  const [imageChange, setImageChange] = useState(false);
   const [image, setImage] = useState("");
   const [uploadingImg, setUploadingImg] = useState(false);
   const [uploadImagePreview, setUploadImagePreview] = useState(null);
 
   const onChangeImageHandler = (files) => {
-    if (files.size >= 524288) {
+    if (files?.size >= 524288) {
       toast("File size limit exceded, Allowed only upto 1MB size");
       return;
     }
+
     setImage(files);
-    setUploadImagePreview(URL.createObjectURL(files));
+    setUploadImagePreview(files && URL?.createObjectURL(files));
   };
 
   const uploadImage = async (files) => {
@@ -44,10 +46,11 @@ function Signup() {
           body: data,
         }
       );
+
       const urlData = await res.json();
       setUploadingImg(false);
 
-      return urlData.url;
+      return urlData.secure_url;
     } catch (error) {
       toast(error.message);
     }
@@ -57,6 +60,14 @@ function Signup() {
     e.preventDefault();
     if (!image) return toast("Please select a profile image!");
     const imageUrl = await uploadImage(image);
+    const userObject = {
+      name,
+      email,
+      password,
+      image: imageUrl,
+    };
+
+    console.log(userObject);
   };
 
   return (
@@ -71,7 +82,7 @@ function Signup() {
             <div className="signup-profile-pic__container">
               <img
                 src={uploadImagePreview || botImg}
-                className="signup-profile-pic"
+                className={`signup-profile-pic ${image && "imageSelected"}  `}
               />
               <label
                 htmlFor="signup-profile-pic"
@@ -94,12 +105,20 @@ function Signup() {
 
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter your name" />
+              <Form.Control
+                type="text"
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your name"
+              />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Username</Form.Label>
-              <Form.Control type="text" placeholder="Enter email or Username" />
+              <Form.Control
+                type="text"
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter email or Username"
+              />
               <Form.Text className="text-muted">
                 We'll never share your email with anyone else.
               </Form.Text>
@@ -107,7 +126,11 @@ function Signup() {
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" />
+              <Form.Control
+                type="password"
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+              />
             </Form.Group>
 
             <Button variant="primary" type="submit" className="mb-3">

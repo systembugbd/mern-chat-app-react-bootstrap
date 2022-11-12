@@ -1,0 +1,8 @@
+.sidebar{
+    overflow: hidden;
+    height: 74vh;
+    border: 1px solid #e3e3e3;
+    overflow-y: scroll;
+    padding:20px;
+
+}

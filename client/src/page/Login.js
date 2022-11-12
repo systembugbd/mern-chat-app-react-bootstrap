@@ -2,8 +2,23 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { Container, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+
+import { toast } from "react-toastify";
 
 function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      //login logic here
+    } catch (error) {
+      toast(error.message);
+    }
+  };
+
   return (
     <Container>
       <Row>
@@ -11,10 +26,14 @@ function Login() {
           md={6}
           className="d-flex flex-column justify-content-center align-items-center"
         >
-          <Form className="d-flex  flex-column w-75">
+          <Form className="d-flex  flex-column w-75" onSubmit={handleSubmit}>
             <Form.Group className="mb-3 my-5" controlId="formBasicEmail">
               <Form.Label>Username</Form.Label>
-              <Form.Control type="text" placeholder="Enter email or Username" />
+              <Form.Control
+                type="text"
+                placeholder="Enter email or Username"
+                onChange={(e) => setEmail(e.target.value)}
+              />
               <Form.Text className="text-muted">
                 We'll never share your email with anyone else.
               </Form.Text>
@@ -22,7 +41,11 @@ function Login() {
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" />
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check type="checkbox" label="Remember me" />

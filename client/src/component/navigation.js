@@ -7,7 +7,7 @@ import logoImg from "./../assets/images/logo.png";
 
 function Navigation() {
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar bg="light" expand="lg" className="mb-5">
       <Container>
         <LinkContainer to="/">
           <Navbar.Brand>

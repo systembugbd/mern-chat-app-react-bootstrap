@@ -1,0 +1,17 @@
+.message-output{
+    height: 70vh;
+    border: 1px solid #e3e3e3;
+    overflow-y: scroll;
+    border-bottom: none;
+
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+@media screen and (max-width:475px) {
+    .message-output{
+    height: 50vh;
+
+}
+}
