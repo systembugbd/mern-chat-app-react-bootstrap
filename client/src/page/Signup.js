@@ -1,18 +1,21 @@
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { Container, Col, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Container, Col, Row, ToastBody } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 import "./signup.css";
 import { useEffect, useState } from "react";
 import botImg from "./../assets/images/bot.png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useSignupUserMutation } from "./../services/appApi";
 
 function Signup() {
   //Form data
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [signupUser, { isLoading, error, isSuccess }] = useSignupUserMutation();
+  const navigate = useNavigate();
 
   //Upload image
   const [imageChange, setImageChange] = useState(false);
@@ -47,27 +50,39 @@ function Signup() {
         }
       );
 
-      const urlData = await res.json();
-      setUploadingImg(false);
+      const urlData = await res.json(); // get live image url
+      setUploadingImg(false); //set uploading image done
 
-      return urlData.secure_url;
+      return urlData.secure_url; // return uploding image url
     } catch (error) {
-      toast(error.message);
+      toast(error.message); //show error once happend during
     }
   };
 
+  //handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!image) return toast("Please select a profile image!");
-    const imageUrl = await uploadImage(image);
-    const userObject = {
-      name,
-      email,
-      password,
-      image: imageUrl,
-    };
+    try {
+      const imageUrl = await uploadImage(image);
+      const userObject = {
+        name,
+        email,
+        password,
+        picture: imageUrl,
+      };
 
-    console.log(userObject);
+      const res = await signupUser(userObject);
+      if (res.error) {
+        toast(res.error.data.message);
+      } else if (res.data) {
+        toast(res.data.message);
+        navigate("/chat");
+      }
+    } catch (error) {
+      console.log(error);
+      toast(error.data.message);
+    }
   };
 
   return (
@@ -133,8 +148,15 @@ function Signup() {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="mb-3">
-              {(uploadingImg && "Uploading image ....") || "Signup"}
+            <Button
+              variant={error ? "danger" : isSuccess ? "success" : "primary"}
+              type="submit"
+              className="mb-3"
+            >
+              {(uploadingImg && "Uploading image ....") ||
+                (isLoading && "Registering you...") ||
+                (isSuccess && "Registration Done :)") ||
+                "Signup"}
             </Button>
           </Form>
           <Link to="/login" className="mb-3">

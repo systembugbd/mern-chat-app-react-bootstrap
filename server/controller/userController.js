@@ -29,9 +29,9 @@ const login = async (req, res) => {
     const user = await User.findByCredentials(email, password); //custom made findByCredentials see in userSchema model
     user.status = "online";
     await user.save();
-    return res.status(200).json(user);
+    return res.status(200).json({ message: "Login successfull", user });
   } catch (err) {
-    return res.json({ message: err.message });
+    return res.json({ error: err.message });
   }
 };
 
